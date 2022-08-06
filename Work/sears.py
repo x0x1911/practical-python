@@ -1,5 +1,4 @@
 # sears.py
-import pcost
 bill_thickness = 0.11 * 0.001  # Meters (0.11 mm)
 sears_height = 442  # Height (meters)
 num_bills = 1

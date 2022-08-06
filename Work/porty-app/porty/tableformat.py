@@ -2,26 +2,26 @@
 
 class TableFormatter:
     def headings(self, headers):
-        '''
+        """
         Emit the table headings.
         @param headers:
         @return:
-        '''
+        """
         raise NotImplementedError()
 
     def row(self, rowdata):
-        '''
+        """
         Emit a single row of table data.
         @param rowdata:
         @return:
-        '''
+        """
         raise NotImplementedError()
 
 
 class TextTableFormatter(TableFormatter):
-    '''
+    """
     Emit a table in plain-text format.
-    '''
+    """
 
     def headings(self, headers):
         for h in headers:
@@ -36,9 +36,9 @@ class TextTableFormatter(TableFormatter):
 
 
 class CSVTableFormatter(TableFormatter):
-    '''
+    """
     Output portfolio data in CSV format.
-    '''
+    """
 
     def headings(self, headers):
         print(','.join(headers))
@@ -48,9 +48,9 @@ class CSVTableFormatter(TableFormatter):
 
 
 class HTMLTableFormatter(TableFormatter):
-    '''
+    """
     Output portfolio data in HTML format.
-    '''
+    """
 
     def headings(self, headers):
         print('<tr><th>', end='')
@@ -63,6 +63,10 @@ class HTMLTableFormatter(TableFormatter):
         print('</td></tr>')
 
 
+class FormatError(Exception):
+    pass
+
+
 def create_formatter(fmt):
     if fmt == 'txt':
         formatter = TextTableFormatter()
@@ -71,5 +75,12 @@ def create_formatter(fmt):
     elif fmt == 'html':
         formatter = HTMLTableFormatter()
     else:
-        raise RuntimeError(f'Unknown format {fmt}')
+        raise FormatError(f'Unknown format {fmt}')
     return formatter
+
+
+def print_table(objects, columns, formatter):
+    formatter.headings(columns)
+    for obj in objects:
+        rowdata = [str(getattr(obj, name)) for name in columns]
+        formatter.row(rowdata)

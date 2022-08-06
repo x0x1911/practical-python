@@ -1,29 +1,30 @@
 # report.py
 #
 # Exercise 2.4
-import fileparse
+from typing import Any
+
+from . import fileparse
 import sys
-import stock
-import tableformat
+from . import tableformat
+from .portfolio import Portfolio
 
-def read_portfolio(filename: str) -> list:
+
+
+def read_portfolio(filename: str, **opts) -> object:
     """
-    Read portfolio from a csv file of name, shares, price data
+    Read a stock portfolio file into a list of dictionaries with keys
+    name, shares, and price.
     """
-    with open(filename) as f:
-        portdicts = fileparse.parse_csv(f, select=['name', 'shares', 'price'], types=[str, int, float])
-        portfolio = [stock.Stock(d['name'], d['shares'], d['price']) for d in portdicts]
-    return portfolio
+    with open(filename) as lines:
+        return Portfolio.from_csv(lines, **opts)
 
 
-def read_prices(filename: str) -> dict:
+def read_prices(filename: str) -> dict[Any, Any]:
     """
     Read prices from a CSV file of name,price data
     """
     with open(filename) as f:
-        result = fileparse.parse_csv(f, types=[str, float], has_headers=False)
-    assert isinstance(result, list)
-    return dict(result)
+        return dict(fileparse.parse_csv(f, types=[str, float], has_headers=False))
 
 
 def make_report(portfolio: list, prices: dict) -> list:
@@ -63,5 +64,12 @@ def main(arglist):
 
 
 if __name__ == '__main__':
+    import logging
+
+    logging.basicConfig(
+        filename='../../app.log',  # Name of the log file (omit to use stderr)
+        filemode='a',  # File mode (use 'a' to append)
+        level=logging.WARNING,  # Logging level (DEBUG, INFO, WARNING, ERROR, or CRITICAL)
+    )
     main(sys.argv)
-    #main(['report.py', 'Data/portfolio.csv', 'Data/prices.csv'])
+    # main(['report.py', '../portfolio.csv', '../prices.csv'])
